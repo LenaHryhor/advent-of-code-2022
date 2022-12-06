@@ -32,7 +32,6 @@ namespace Advent_of_code_2022
 
             return newStack;
         }
-        
 
         public static void Run()
         {
@@ -42,33 +41,28 @@ namespace Advent_of_code_2022
                 String line = sr.ReadLine();
                 List<Stack<char>> stacks = new List<Stack<char>>()
                 {
+                    new Stack<char> (), new Stack<char> (), new Stack<char> (),
+                    new Stack<char> (), new Stack<char> (), new Stack<char> (),
                     new Stack<char> (), new Stack<char> (), new Stack<char> ()
                 };
 
+                char[,] data = new char[2, 3];
+                int row = 0;
                 while (line != null)
                 {
                     if (line.Contains('['))
                     {
-                        var spaceCounter = 0;
                         var stackCounter = 0;
-                        for(int i = 0; i < line.Length; i++)
+                        //columns - 1 5 9 13 17 21 25 29 33
+                        for (int j = 1; j < line.Length; j = j + 4)
                         {
-                            if (line[i] == ' ')
-                                spaceCounter++;
+                            var item = line[j];
+                            if (item != ' ')
+                                stacks[stackCounter].Push(item);
                             
-                            if (spaceCounter == 3)
-                            {
-                                spaceCounter = 0;
-                                stackCounter++;
-                            }
-                            
-                            if (Char.IsLetter(line[i]))
-                            {
-                                stacks[stackCounter].Push(line[i]);
-                                spaceCounter = 0;
-                                stackCounter++;
-                            }
+                            stackCounter++;
                         }
+                        row++;
                     }
                     else if (line.Contains("move"))
                     {
@@ -90,7 +84,7 @@ namespace Advent_of_code_2022
                 foreach (var stack in stacks)
                     res = stack.TryPop(out char c) ? res + c : res;
 
-                Console.WriteLine(res);
+                Console.WriteLine(res); // BSDMQFLSP
             }
             catch (Exception e)
             {
