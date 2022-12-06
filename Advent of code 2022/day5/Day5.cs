@@ -67,8 +67,20 @@ namespace Advent_of_code_2022
                     else if (line.Contains("move"))
                     {
                         var instruction = GetInstruction(line);
+
+                        //part1
+                        //for (int i = 0; i < instruction.count; i++)
+                        //    stacks[instruction.to - 1].Push(stacks[instruction.from -1].Pop());
+
+                        //part2
+                        var additionalStack = new Stack<char>();
                         for(int i = 0; i < instruction.count; i++)
-                            stacks[instruction.to - 1].Push(stacks[instruction.from - 1].Pop());
+                            additionalStack.Push(stacks[instruction.from - 1].Pop());
+
+                        for (int i = 0; i < instruction.count; i++)
+                            stacks[instruction.to - 1].Push(additionalStack.Pop()); 
+                        
+
                     }
                     else if (line.Contains('1'))
                     {
