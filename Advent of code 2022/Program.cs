@@ -1,4 +1,4 @@
-﻿using Advent_of_code_2022.day3;
+﻿using Advent_of_code_2022;
 using System;
 
 namespace Advent_of_code_2022
@@ -7,7 +7,7 @@ namespace Advent_of_code_2022
     {
         static void Main(string[] args)
         {
-            Day3.Run();
+            Day5.Run();
         }
     }
 }
