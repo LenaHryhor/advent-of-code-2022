@@ -6,51 +6,51 @@ namespace Advent_of_code_2022
     {
         private static string GetCdDirection(string str) => str.Split(' ')[2];
 
-        public abstract class Element
+        public class Directory
         {
             public string Name;
             public ulong Size;
-            public abstract void Add(Element e);
-        }
+            public List<Directory> Directories;
+            public Directory Parent;
 
-        public class Directory : Element
-        {
-
-            public List<Element> Directories;
-            public List<Element> Files;
-
-            public Directory(string name)
+            public Directory(string name, Directory parent)
             {
                 Name = name;
                 Size = 0;
-                Directories = new List<Element>();
-                Files = new List<Element>();
+                Directories = new();
+                Parent = parent;
             }
 
-            public override void Add(Element e)
+            public Directory GetDirectory(string name)
             {
-                if (e is Files)
-                {
-                    Files.Add(e);
-                    Size += e.Size;
-                }
-                else
-                    Directories.Add(e);
+                return Name == name? this : Directories.Find(d => d.Name == name);
+            }
+
+            public void AddFile(ulong size)
+            {
+                Size += size;
+            }
+
+            public void AddDirectory(Directory d)
+            {
+                Directories.Add(d);
             }
         }
 
-        public class Files : Element
+        private List<ulong> FindedDirectories = new();
+
+        private void CountDirectories(Directory dir)
         {
-            public Files(string name, ulong size)
+            foreach (var item in dir.Directories)
             {
-                Name = name;
-                Size = size;
+                CountDirectories(item);
             }
-            public override void Add(Element e)
-            {
-            }
+            
+            if (dir.Size < 100000)
+                FindedDirectories.Add(dir.Size);
         }
-        public static void Run()
+
+        public void Run()
         {
             try
             {
@@ -58,11 +58,8 @@ namespace Advent_of_code_2022
                 String line = sr.ReadLine();
                 int res = 0;
 
-                List<Element> elements = new();
-                Element root = new Directory("/");
-                elements.Add(root);
-
-                int currentDirIndex = 0;
+                Directory root = new Directory("/", null);
+                Directory currentDir = root;
 
                 bool isReadingElements = false;
                 while (line != null)
@@ -72,33 +69,33 @@ namespace Advent_of_code_2022
                         var direction = GetCdDirection(line);
                         if (direction == "..")
                         {
-                            currentDirIndex = elements.Count - 1;
+                            currentDir = currentDir.Parent;
                         }
                         else
-                            currentDirIndex = elements.IndexOf(elements.Find(e => e.Name == direction));
+                            currentDir = currentDir.GetDirectory(direction);
 
                         isReadingElements = false;
-                        
                     }
                     else if (line.Contains("ls"))
                     {
                         isReadingElements = true;
-                       
                     }
                     else if (line.Contains("dir"))
-                        elements[currentDirIndex].Add(new Directory(line.Split(' ')[1]));
+                        currentDir.AddDirectory(new Directory(line.Split(' ')[1], currentDir));
                     else
                     {
                         var list = line.Split(' ');
-                        elements[currentDirIndex].Add(new Files(list[1], ulong.Parse(list[0])));
+                        currentDir.AddFile(ulong.Parse(list[0]));
                     }
 
                     line = sr.ReadLine();
                 }
-                sr.Close();
 
-                foreach (var item in elements)
-                    Console.WriteLine($"Result: {item.Size}");
+                sr.Close();
+                    
+                CountDirectories(root);
+                foreach (var item in FindedDirectories)
+                    Console.WriteLine($"Result: {item}");
             }
             catch (Exception e)
             {
@@ -110,5 +107,4 @@ namespace Advent_of_code_2022
             }
         }
     }
-    
 }
