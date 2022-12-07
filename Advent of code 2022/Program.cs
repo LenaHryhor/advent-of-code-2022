@@ -7,7 +7,7 @@ namespace Advent_of_code_2022
     {
         static void Main(string[] args)
         {
-            Day6.Run();
+            Day7.Run();
         }
     }
 }
